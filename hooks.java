@@ -1,26 +1,49 @@
 package com.hooks;
 
-import com.config.ConfigReader;
-import com.factory.DriverFactory;
-
-import io.cucumber.java.Before;
+import com.utilities.ConfigReader;
 import io.cucumber.java.After;
+import io.cucumber.java.Before;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.firefox.FirefoxDriver;
 
 public class Hooks {
 
+    private static WebDriver driver;
+
     @Before
     public void setUp() {
+        // Initialize ConfigReader
+        ConfigReader configReader = new ConfigReader();
+        configReader.init_prop();
 
+        // Get browser type from config
         String browser = ConfigReader.getProperty("browser");
-        String url = ConfigReader.getProperty("url");
 
-        DriverFactory.initDriver(browser);
+        // Initialize WebDriver based on browser type
+        if (browser.equalsIgnoreCase("chrome")) {
+            System.setProperty("webdriver.chrome.driver", "./drivers/chromedriver");
+            driver = new ChromeDriver();
+        } else if (browser.equalsIgnoreCase("firefox")) {
+            System.setProperty("webdriver.gecko.driver", "./drivers/geckodriver");
+            driver = new FirefoxDriver();
+        } else {
+            throw new IllegalArgumentException("Unsupported browser: " + browser);
+        }
 
-        DriverFactory.getDriver().get(url);
+        // Maximize browser window and navigate to URL
+        driver.manage().window().maximize();
+        driver.get(ConfigReader.getProperty("url"));
     }
 
     @After
     public void tearDown() {
-        DriverFactory.quitDriver();
+        if (driver != null) {
+            driver.quit();
+        }
+    }
+
+    public static WebDriver getDriver() {
+        return driver;
     }
 }
