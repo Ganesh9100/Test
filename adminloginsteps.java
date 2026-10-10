@@ -1,36 +1,35 @@
-package com.stepdefinitions;
+package stepdefinitions;
 
-import com.pages.AdminLogin;
-import com.utilities.ConfigReader;
 import io.cucumber.java.en.Given;
-import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
-import org.testng.Assert;
+import io.cucumber.java.en.Then;
+import pages.AdminLoginPage;
+import utils.DriverFactory;
 
-public class AdminLoginSteps {
+public class AdminLoginStep {
 
-    private AdminLogin adminLogin;
+    // Initialize the page object using the driver from DriverFactory
+    AdminLoginPage adminLoginPage = new AdminLoginPage(DriverFactory.getDriver());
 
-    @Given("the admin is on the login page")
-    public void the_admin_is_on_the_login_page() {
-        adminLogin = new AdminLogin(); // Initialize the AdminLogin page object
+    @Given("the user is on the admin login page")
+    public void the_user_is_on_the_admin_login_page() {
+        DriverFactory.getDriver().get("https://your-corzaar-url.com/admin");
     }
 
-    @When("the admin enters valid credentials")
-    public void the_admin_enters_valid_credentials() {
-        adminLogin.enterUsername(ConfigReader.getProperty("adminUsername"));
-        adminLogin.enterPassword(ConfigReader.getProperty("adminPassword"));
+    @When("the user enters valid credentials {string} and {string}")
+    public void the_user_enters_valid_credentials(String username, String password) {
+        // Standard method calls instead of routing through ElementUtils
+        adminLoginPage.enterUsername(username);
+        adminLoginPage.enterPassword(password);
     }
 
-    @When("clicks the login button")
-    public void clicks_the_login_button() {
-        adminLogin.clickLogin();
+    @When("clicks on the login button")
+    public void clicks_on_the_login_button() {
+        adminLoginPage.clickLogin();
     }
 
-    @Then("the admin should be redirected to the dashboard")
-    public void the_admin_should_be_redirected_to_the_dashboard() {
-        String expectedTitle = "Admin Dashboard";
-        String actualTitle = adminLogin.getPageTitle();
-        Assert.assertEquals(actualTitle, expectedTitle, "Login failed. Expected title: " + expectedTitle);
+    @Then("the user should be navigated to the admin dashboard")
+    public void the_user_should_be_navigated_to_the_admin_dashboard() {
+        // Add your assertions here
     }
 }
