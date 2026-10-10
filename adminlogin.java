@@ -1,38 +1,51 @@
-package com.pages;
+package pages;
 
-import com.hooks.Hooks;
-import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.FindBy;
+import org.openqa.selenium.support.PageFactory;
+import base.BaseClass; // Assuming your driver initialization is here
+import utils.wait; // Your custom wait utility from the screenshot
 
-public class AdminLogin {
+public class AdminLoginPage extends BaseClass {
 
-    private WebDriver driver;
+    // 1. Define Locators using @FindBy
+    @FindBy(id = "username")
+    private WebElement usernameField;
 
-    // Locators
-    private By usernameField = By.id("username");
-    private By passwordField = By.id("password");
-    private By loginButton = By.id("loginBtn");
+    @FindBy(id = "password")
+    private WebElement passwordField;
 
-    // Constructor
-    public AdminLogin() {
-        this.driver = Hooks.getDriver(); // Get WebDriver instance from Hooks
+    @FindBy(xpath = "//button[@type='submit']")
+    private WebElement loginButton;
+
+    // 2. Constructor to initialize PageFactory
+    public AdminLoginPage(WebDriver driver) {
+        this.driver = driver;
+        PageFactory.initElements(driver, this);
     }
 
-    // Actions
+    // 3. Page Actions (Replacing ElementUtils with standard Selenium)
     public void enterUsername(String username) {
-        driver.findElement(usernameField).sendKeys(username);
+        // Example of using your wait.java utility (assuming it has a waitForVisibility method)
+        // wait.waitForVisibility(driver, usernameField, 10); 
+        usernameField.clear();
+        usernameField.sendKeys(username);
     }
 
     public void enterPassword(String password) {
-        driver.findElement(passwordField).sendKeys(password);
+        passwordField.clear();
+        passwordField.sendKeys(password);
     }
 
     public void clickLogin() {
-        driver.findElement(loginButton).click();
+        loginButton.click();
     }
 
-    // Additional methods for validation, if needed
-    public String getPageTitle() {
-        return driver.getTitle();
+    // Combined method for convenience
+    public void loginToAdminPortal(String username, String password) {
+        enterUsername(username);
+        enterPassword(password);
+        clickLogin();
     }
 }
