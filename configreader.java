@@ -1,44 +1,31 @@
-package com.config;
+package com.utilities;
 
-import java.io.InputStream;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
 
 public class ConfigReader {
 
-    private static final Properties properties = new Properties();
+    private static Properties prop;
 
-    static {
-
-        try (InputStream input =
-                 ConfigReader.class.getClassLoader()
-                     .getResourceAsStream("config.properties")) {
-
-            if (input == null) {
-                throw new RuntimeException(
-                    "config.properties file not found"
-                );
-            }
-
-            properties.load(input);
-
+    // Initialize properties from the config file
+    public Properties initProperties() {
+        prop = new Properties();
+        File file = new File("./Config/Config.properties");
+        try (FileInputStream fis = new FileInputStream(file)) {
+            prop.load(fis);
         } catch (IOException e) {
-            throw new RuntimeException(
-                "Unable to load configuration", e
-            );
+            System.out.println("Error loading configuration file: " + e.getMessage());
         }
+        return prop;
     }
 
+    // Get property value by key
     public static String getProperty(String key) {
-
-        String value = properties.getProperty(key);
-
-        if (value == null || value.trim().isEmpty()) {
-            throw new RuntimeException(
-                "Configuration property missing: " + key
-            );
+        if (prop == null) {
+            throw new IllegalStateException("Properties file not initialized. Call initProperties() first.");
         }
-
-        return value.trim();
+        return prop.getProperty(key);
     }
 }
